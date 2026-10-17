@@ -15,10 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::firstOrCreate(
-            ['email' => 'admin@racnin.test'],
-            ['name' => 'RacNin Admin', 'password' => 'password', 'email_verified_at' => now()],
-        );
+        $this->seedAdmin();
 
         $this->call([
             InventorySeeder::class,
@@ -29,5 +26,34 @@ class DatabaseSeeder extends Seeder
         if (app()->isLocal()) {
             $this->call(DemoSalesSeeder::class);
         }
+    }
+
+    /**
+     * Local development gets a known login. Anywhere else the account comes
+     * from ADMIN_EMAIL and ADMIN_PASSWORD, so no default password goes live.
+     */
+    private function seedAdmin(): void
+    {
+        if (app()->isLocal()) {
+            User::firstOrCreate(
+                ['email' => 'admin@racnin.test'],
+                ['name' => 'RacNin Admin', 'password' => 'password', 'email_verified_at' => now()],
+            );
+
+            return;
+        }
+
+        ['email' => $email, 'password' => $password] = config('racnin.admin');
+
+        if (blank($email) || blank($password)) {
+            $this->command?->warn('No admin created. Set ADMIN_EMAIL and ADMIN_PASSWORD, or run: php artisan make:filament-user');
+
+            return;
+        }
+
+        User::firstOrCreate(
+            ['email' => $email],
+            ['name' => 'RacNin Admin', 'password' => $password, 'email_verified_at' => now()],
+        );
     }
 }

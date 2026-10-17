@@ -1,0 +1,16 @@
+:{$PORT:80} {
+	root * /app/public
+	encode zstd gzip
+
+	# Fingerprinted Vite files and Filament's versioned assets never change,
+	# so browsers and Vercel's CDN can keep them for a year.
+	@immutable path /build/* /css/filament/* /js/filament/* /fonts/filament/*
+	header @immutable Cache-Control "public, max-age=31536000, s-maxage=31536000, immutable"
+
+	@images path /images/* /favicon.ico
+	header @images Cache-Control "public, max-age=86400, s-maxage=604800"
+
+	php_server {
+		try_files {path} index.php
+	}
+}
