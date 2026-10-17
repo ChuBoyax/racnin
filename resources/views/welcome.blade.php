@@ -85,6 +85,8 @@
         <script type="application/ld+json">@json($structuredData)</script>
     </head>
     <body class="min-h-screen overflow-x-clip">
+        <x-menu-art-defs />
+
         <a href="#menu" class="sr-only z-[100] rounded-full bg-ink px-5 py-3 font-bold text-cream focus:not-sr-only focus:fixed focus:top-4 focus:left-4">Skip to the menu</a>
 
         <div class="scroll-progress fixed inset-x-0 top-0 z-[60] h-1 bg-linear-to-r from-amber via-brand to-chili" aria-hidden="true"></div>

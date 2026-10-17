@@ -68,7 +68,7 @@
     "src": "_instrument-serif-400-normal-DnYpCC2O.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-Du2rY5Kt.css",
+    "file": "assets/app-BsGaM2JO.css",
     "name": "app",
     "names": [
       "app.css"
@@ -77,7 +77,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-Cr2liGDj.js",
+    "file": "assets/app-DW7mmjOw.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true

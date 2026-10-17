@@ -76,7 +76,11 @@ export function initOrder({ cart, items, shop }) {
 
         const art = source.cloneNode(true);
         art.removeAttribute('data-art');
-        art.setAttribute('class', art.classList.contains('menu-art-combo') ? 'menu-art menu-art-combo size-full' : 'menu-art h-full w-auto');
+        if (art.tagName === 'IMG') {
+            art.setAttribute('class', 'menu-photo size-full');
+        } else {
+            art.setAttribute('class', art.classList.contains('menu-art-combo') ? 'menu-art menu-art-combo size-full' : 'menu-art h-full w-auto');
+        }
 
         return art;
     }

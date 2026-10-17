@@ -1,6 +1,9 @@
+@use('App\View\Components\MenuArt')
+
 @php
-    $ink = '#2a1d15';
     $type = $art['type'];
+    $logo = asset('images/logo-mark.webp');
+    $ink = '#1f1510';
 @endphp
 
 @if ($type === 'combo')
@@ -12,219 +15,308 @@
 @else
     <svg viewBox="0 0 200 220" {{ $attributes->merge(['class' => 'menu-art']) }} aria-hidden="true" focusable="false">
         @if ($isDrink())
-            {{-- Straw runs behind the cup so the liquid tints it --}}
-            @php($straw = $type === 'frappe' ? [128, 2, 106, 196, 124, 36] : [132, 4, 108, 196, 125, 60])
-            <line x1="{{ $straw[0] }}" y1="{{ $straw[1] }}" x2="{{ $straw[2] }}" y2="{{ $straw[3] }}" stroke="{{ $ink }}" stroke-width="11" stroke-linecap="round" />
-            <line x1="{{ $straw[0] }}" y1="{{ $straw[1] }}" x2="{{ $straw[2] }}" y2="{{ $straw[3] }}" stroke="#ee7f1a" stroke-width="5.5" stroke-linecap="round" />
+            @php
+                $straw = $straw();
+                $surface = $surface();
+                $cup = MenuArt::cupPath();
+                $liquid = $liquidPath();
+                $topColor = $art['layers'][array_key_last($art['layers'])][0];
+                $isFrappe = $type === 'frappe';
+            @endphp
 
-            <path d="M52 64 L61.5 196 Q62 204 69 204 L131 204 Q138 204 138.5 196 L148 64 Z" fill="#ffffff" fill-opacity=".5" />
+            <ellipse cx="104" cy="207" rx="60" ry="10" fill="url(#ra-shadow)" />
 
-            @foreach ($liquid() as $band)
-                <path d="{{ $band['d'] }}" fill="{{ $band['fill'] }}" />
-            @endforeach
+            {{-- Straw first, so the drink hides the part below its surface --}}
+            <g transform="translate({{ $straw['x'] }} {{ $straw['y'] }}) rotate({{ $straw['angle'] }})">
+                <rect x="-4" width="8" height="{{ $straw['length'] }}" rx="4" fill="url(#ra-straw)" />
+            </g>
 
-            @foreach ($speckles() as [$x, $y])
-                <circle cx="{{ $x }}" cy="{{ $y }}" r="2.3" fill="{{ $art['speckle'] }}" />
-            @endforeach
+            <path d="{{ $cup }}" fill="#ffffff" fill-opacity=".22" />
 
-            @if ($type !== 'frappe')
-                <g fill="#ffffff" fill-opacity=".45" stroke="#ffffff" stroke-opacity=".9" stroke-width="2">
-                    <rect x="64" y="90" width="26" height="24" rx="6" transform="rotate(-12 77 102)" />
-                    <rect x="95" y="86" width="27" height="25" rx="6" transform="rotate(9 108 98)" />
-                    @if ($type === 'iced')
-                        <rect x="113" y="110" width="21" height="21" rx="5" transform="rotate(-6 123 120)" />
-                        <rect x="72" y="114" width="20" height="20" rx="5" transform="rotate(14 82 124)" />
+            <g clip-path="url(#ra-cup)">
+                <g filter="url(#ra-soft)" @if ($type === 'soda') opacity=".88" @endif>
+                    <path d="{{ $liquid }}" fill="{{ $topColor }}" />
+                    @foreach ($bands() as $band)
+                        <path d="{{ $band['d'] }}" fill="{{ $band['fill'] }}" />
+                    @endforeach
+                    @foreach ($tendrils() as $tendril)
+                        <path d="{{ $tendril['d'] }}" stroke="{{ $tendril['stroke'] }}" stroke-width="{{ $tendril['width'] }}" stroke-linecap="round" fill="none" opacity=".45" />
+                    @endforeach
+                </g>
+
+                <ellipse cx="{{ $surface['cx'] }}" cy="{{ $surface['cy'] }}" rx="{{ $surface['rx'] }}" ry="{{ $surface['ry'] }}" fill="{{ $surface['fill'] }}" @if ($type === 'soda') opacity=".85" @endif />
+                <ellipse cx="{{ $surface['cx'] }}" cy="{{ $surface['cy'] }}" rx="{{ $surface['rx'] }}" ry="{{ $surface['ry'] }}" fill="url(#ra-sheen)" opacity=".5" />
+
+                <path d="{{ $liquid }}" fill="url(#ra-cyl)" />
+                <path d="{{ $liquid }}" fill="url(#ra-depth)" />
+                @if ($isFrappe)
+                    <path d="{{ $liquid }}" fill="#ffffff" filter="url(#ra-grain)" opacity=".4" />
+                @endif
+
+                @foreach ($speckles() as $speck)
+                    <circle cx="{{ $speck['x'] }}" cy="{{ $speck['y'] }}" r="{{ $speck['r'] }}" fill="{{ $art['speckle'] }}" opacity=".85" />
+                @endforeach
+
+                @foreach ($bubbles() as $bubble)
+                    <circle cx="{{ $bubble['x'] }}" cy="{{ $bubble['y'] }}" r="{{ $bubble['r'] }}" fill="#ffffff" fill-opacity=".18" stroke="#ffffff" stroke-opacity=".8" stroke-width=".6" />
+                    <circle cx="{{ $bubble['x'] - $bubble['r'] * 0.35 }}" cy="{{ $bubble['y'] - $bubble['r'] * 0.35 }}" r="{{ max(0.3, $bubble['r'] * 0.3) }}" fill="#ffffff" />
+                @endforeach
+
+                @foreach ($ice() as $cube)
+                    @php($half = $cube['size'] / 2)
+                    <g transform="translate({{ $cube['x'] }} {{ $cube['y'] }}) rotate({{ $cube['rotate'] }})" opacity="{{ $cube['opacity'] }}">
+                        <rect x="{{ -$half }}" y="{{ -$half }}" width="{{ $cube['size'] }}" height="{{ $cube['size'] }}" rx="{{ $cube['size'] * 0.22 }}" fill="url(#ra-ice)" stroke="#ffffff" stroke-opacity=".9" stroke-width=".9" />
+                        <rect x="{{ 3 - $half }}" y="{{ 3 - $half }}" width="{{ $cube['size'] - 6 }}" height="{{ $cube['size'] - 6 }}" rx="{{ $cube['size'] * 0.16 }}" fill="none" stroke="#ffffff" stroke-opacity=".35" stroke-width=".8" />
+                        <path d="M{{ 3 - $half }} {{ 4 - $half }} q{{ $half * 0.6 }} -2.5 {{ $half * 1.2 }} 0" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" fill="none" />
+                    </g>
+                @endforeach
+            </g>
+
+            {{-- The real RacNin sticker, wrapped slightly around the cup --}}
+            <g transform="translate(100 139) scale(.92 1) translate(-100 -139)">
+                <circle cx="100" cy="139" r="21.5" fill="#000000" opacity=".12" filter="url(#ra-blur)" />
+                <image href="{{ $logo }}" x="79" y="118" width="42" height="42" />
+            </g>
+
+            <g clip-path="url(#ra-cup)">
+                @foreach ($droplets() as $drop)
+                    @if ($drop['drip'] > 0)
+                        <path d="M{{ $drop['x'] - $drop['r'] }} {{ $drop['y'] }} Q{{ $drop['x'] - $drop['r'] }} {{ $drop['y'] + $drop['drip'] }} {{ $drop['x'] }} {{ $drop['y'] + $drop['drip'] + $drop['r'] }} Q{{ $drop['x'] + $drop['r'] }} {{ $drop['y'] + $drop['drip'] }} {{ $drop['x'] + $drop['r'] }} {{ $drop['y'] }} A{{ $drop['r'] }} {{ $drop['r'] }} 0 0 0 {{ $drop['x'] - $drop['r'] }} {{ $drop['y'] }} Z" fill="url(#ra-drop)" />
+                    @else
+                        <circle cx="{{ $drop['x'] }}" cy="{{ $drop['y'] }}" r="{{ $drop['r'] }}" fill="url(#ra-drop)" />
                     @endif
-                </g>
-            @endif
-
-            @if ($type === 'soda')
-                <g fill="none" stroke="#ffffff" stroke-opacity=".85" stroke-width="1.6">
-                    <circle cx="70" cy="178" r="3.2" />
-                    <circle cx="84" cy="134" r="2.4" />
-                    <circle cx="124" cy="166" r="3.6" />
-                    <circle cx="114" cy="124" r="2" />
-                    <circle cx="130" cy="140" r="2.6" />
-                    <circle cx="96" cy="188" r="2" />
-                    <circle cx="66" cy="142" r="1.8" />
-                    <circle cx="132" cy="186" r="1.8" />
-                </g>
-            @endif
-
-            <path d="M63.5 94 L69 186" stroke="#ffffff" stroke-opacity=".55" stroke-width="5" stroke-linecap="round" />
-
-            {{-- A tiny version of the logo, like the sticker on every real cup --}}
-            <g transform="translate(100 156)">
-                <circle r="17" fill="#fff8ef" stroke="{{ $ink }}" stroke-width="2.5" />
-                <circle r="13" fill="none" stroke="#ee7f1a" stroke-width="1.8" />
-                <path d="M-9 5 A9 9 0 0 1 9 5 Z" fill="#a8a754" />
-                <path d="M-4 -2 L4 -2 L3 7 L-3 7 Z" fill="#f7a826" stroke="{{ $ink }}" stroke-width="1.2" stroke-linejoin="round" />
-                <path d="M-4.6 -2 C-4.6 -9 4.6 -9 4.6 -2 Z" fill="#f3d9bd" stroke="{{ $ink }}" stroke-width="1.2" stroke-linejoin="round" />
+                    <circle cx="{{ $drop['x'] - $drop['r'] * 0.35 }}" cy="{{ $drop['y'] - $drop['r'] * 0.35 }}" r="{{ max(0.25, $drop['r'] * 0.26) }}" fill="#ffffff" fill-opacity=".65" />
+                @endforeach
             </g>
 
-            <path d="M52 64 L61.5 196 Q62 204 69 204 L131 204 Q138 204 138.5 196 L148 64" fill="none" stroke="{{ $ink }}" stroke-width="3.5" stroke-linejoin="round" />
+            {{-- Clear plastic: brighter at the edges, with glossy streaks following the taper --}}
+            <path d="{{ $cup }}" fill="url(#ra-plastic)" />
+            <path d="M57 62 L64 62 L71.5 194 L66.5 194 Z" fill="url(#ra-gloss)" />
+            <path d="M76 66 L78 66 L83 188 L82 188 Z" fill="url(#ra-gloss)" opacity=".55" />
+            <path d="M141 62 L143.6 62 L135.6 194 L134 194 Z" fill="url(#ra-gloss)" opacity=".7" />
+            <path d="{{ $cup }}" fill="none" stroke="#ffffff" stroke-opacity=".75" stroke-width="1.2" />
+            <path d="{{ $cup }}" fill="none" stroke="{{ $ink }}" stroke-opacity=".14" stroke-width=".7" />
+            <path d="M63 202 A37 6.5 0 0 0 137 202" fill="none" stroke="#ffffff" stroke-opacity=".7" stroke-width="2" />
 
-            @if ($type === 'frappe')
-                <path d="M50 68 C42 56 56 44 68 50 C66 38 80 31 90 38 C94 25 112 23 116 35 C126 29 141 37 136 50 C148 47 158 58 150 68 Z" fill="{{ $art['whip'] }}" stroke="{{ $ink }}" stroke-width="3" stroke-linejoin="round" />
-                <path d="M68 53 C78 47 88 51 96 47 M90 41 C100 37 108 41 114 37 M116 53 C124 49 132 53 137 51" fill="none" stroke="{{ $ink }}" stroke-opacity=".3" stroke-width="2" stroke-linecap="round" />
-                <path d="M58 60 L71 47 L80 59 L92 41 L100 57 L112 38 L118 56 L130 45 L141 61" fill="none" stroke="{{ $art['drizzle'] }}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M44 68 C44 30 70 14 100 14 C130 14 156 30 156 68" fill="none" stroke="{{ $ink }}" stroke-width="3.5" />
-                <path d="M57 50 C59 36 71 26 85 22" fill="none" stroke="#ffffff" stroke-opacity=".8" stroke-width="3" stroke-linecap="round" />
-                <rect x="40" y="62" width="120" height="10" rx="5" fill="#fff8ef" stroke="{{ $ink }}" stroke-width="3.5" />
+            @if ($isFrappe)
+                {{-- Whipped cream under a clear dome --}}
+                @foreach ([
+                    'M52 56 C46 46 56 38 66 41 C68 33 80 30 88 35 C94 27 108 27 114 34 C122 29 136 34 136 42 C146 40 154 48 148 56 C132 62 68 62 52 56 Z',
+                    'M64 42 C60 33 70 26 80 29 C84 21 98 20 104 26 C112 21 126 26 124 34 C132 34 136 42 130 46 C112 50 80 50 64 42 Z',
+                    'M80 30 C78 22 86 16 94 18 C96 10 106 6 110 12 C114 8 120 12 118 18 C124 20 124 28 118 31 C106 35 90 35 80 30 Z',
+                ] as $tier)
+                    <path d="{{ $tier }}" fill="{{ $art['whip'] }}" />
+                    <path d="{{ $tier }}" fill="url(#ra-cream)" stroke="#5b3a1e" stroke-opacity=".14" stroke-width=".8" />
+                @endforeach
+                <path d="M68 52 C78 48 90 52 100 48 M88 38 C96 35 104 38 112 35 M114 52 C124 48 132 51 140 49 M96 24 C100 22 106 23 110 21" stroke="#5b3a1e" stroke-opacity=".13" stroke-width="1.3" stroke-linecap="round" fill="none" />
+
+                @isset($art['speckle'])
+                    @foreach ($points(26, 100, 36, 40, 16, 5) as $crumb)
+                        <circle cx="{{ $crumb['x'] }}" cy="{{ $crumb['y'] }}" r="{{ 0.7 + $crumb['size'] * 1.3 }}" fill="{{ $art['speckle'] }}" />
+                    @endforeach
+                @endisset
+
+                @php($drizzle = 'M57 52 C65 41 73 54 82 44 S97 46 104 36 S120 45 128 38 S141 50 144 50 M70 35 C79 29 85 41 94 29 S109 30 116 22')
+                <path d="{{ $drizzle }}" fill="none" stroke="{{ $art['drizzle'] }}" stroke-width="3" stroke-linecap="round" />
+                <path d="M83 45 q1.5 7 -.5 12 M121 41 q1 6 0 10" fill="none" stroke="{{ $art['drizzle'] }}" stroke-width="2.4" stroke-linecap="round" />
+                <path d="{{ $drizzle }}" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width=".9" stroke-linecap="round" transform="translate(-.5 -.8)" />
+
+                <path d="M50 52 C50 20 73 7 100 7 C127 7 150 20 150 52" fill="#ffffff" fill-opacity=".1" stroke="#ffffff" stroke-opacity=".9" stroke-width="1.8" />
+                <path d="M50 52 C50 20 73 7 100 7 C127 7 150 20 150 52" fill="none" stroke="{{ $ink }}" stroke-opacity=".1" stroke-width=".7" />
+                <path d="M59 42 C61 27 73 16 88 12" fill="none" stroke="#ffffff" stroke-opacity=".9" stroke-width="3" stroke-linecap="round" />
+                <path d="M140 38 C138 29 132 22 125 18" fill="none" stroke="#ffffff" stroke-opacity=".55" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M50 52 A50 9 0 0 0 150 52" fill="none" stroke="#ffffff" stroke-opacity=".95" stroke-width="3.6" />
+                <path d="M50 53.5 A50 9.5 0 0 0 150 53.5" fill="none" stroke="{{ $ink }}" stroke-opacity=".12" stroke-width=".7" />
+
+                <g clip-path="url(#ra-above-dome)">
+                    <g transform="translate({{ $straw['x'] }} {{ $straw['y'] }}) rotate({{ $straw['angle'] }})">
+                        <rect x="-4" width="8" height="{{ $straw['length'] }}" rx="4" fill="url(#ra-straw)" />
+                    </g>
+                </g>
             @else
-                <rect x="43" y="54" width="114" height="13" rx="6.5" fill="#fff8ef" stroke="{{ $ink }}" stroke-width="3.5" />
+                {{-- Sealed film lid, pierced by the straw --}}
+                <ellipse cx="100" cy="50" rx="49" ry="9" fill="url(#ra-film)" />
+                <path d="M62 46 Q80 42 98 43" stroke="#ffffff" stroke-opacity=".85" stroke-width="1.6" fill="none" stroke-linecap="round" />
+                <ellipse cx="100" cy="50" rx="49" ry="9" fill="none" stroke="#ffffff" stroke-opacity=".95" stroke-width="2.4" />
+                <ellipse cx="100" cy="50.6" rx="49.6" ry="9.5" fill="none" stroke="{{ $ink }}" stroke-opacity=".14" stroke-width=".7" />
+
+                <g clip-path="url(#ra-above-rim)">
+                    <g transform="translate({{ $straw['x'] }} {{ $straw['y'] }}) rotate({{ $straw['angle'] }})">
+                        <rect x="-4" width="8" height="{{ $straw['length'] }}" rx="4" fill="url(#ra-straw)" />
+                    </g>
+                    <ellipse cx="122.5" cy="49" rx="6" ry="1.6" fill="{{ $ink }}" opacity=".15" />
+                </g>
             @endif
-
-            <line x1="{{ $straw[0] }}" y1="{{ $straw[1] }}" x2="{{ $straw[4] }}" y2="{{ $straw[5] }}" stroke="{{ $ink }}" stroke-width="11" stroke-linecap="round" />
-            <line x1="{{ $straw[0] }}" y1="{{ $straw[1] }}" x2="{{ $straw[4] }}" y2="{{ $straw[5] }}" stroke="#ee7f1a" stroke-width="5.5" stroke-linecap="round" />
         @elseif ($type === 'plate')
-            <ellipse cx="100" cy="158" rx="92" ry="46" fill="#ffffff" stroke="{{ $ink }}" stroke-width="3.5" />
-            <ellipse cx="100" cy="154" rx="72" ry="32" fill="#fff8ef" stroke="{{ $ink }}" stroke-opacity=".12" stroke-width="2" />
+            <ellipse cx="102" cy="190" rx="98" ry="18" fill="url(#ra-shadow)" />
+            <ellipse cx="100" cy="160" rx="94" ry="44" fill="url(#ra-plate)" />
+            <ellipse cx="100" cy="157" rx="73" ry="31" fill="url(#ra-plate-well)" />
+            <path d="M27 157 A73 31 0 0 1 173 157" fill="none" stroke="#000000" stroke-opacity=".06" stroke-width="2" />
+            <path d="M8 163 A94 44 0 0 0 192 163" fill="none" stroke="#ffffff" stroke-width="1.6" />
 
-            <path d="M30 160 C24 128 52 108 74 116 C92 104 120 116 118 146 C120 166 40 176 30 160 Z" fill="#ffffff" stroke="{{ $ink }}" stroke-width="3" stroke-linejoin="round" />
-            <path d="M48 132 l5 -2 M66 126 l5 1 M84 128 l4 -3 M58 146 l5 -1 M78 142 l5 2 M98 136 l4 -2 M94 152 l5 1 M46 152 l4 -2" stroke="{{ $ink }}" stroke-opacity=".22" stroke-width="2" stroke-linecap="round" />
-            <g fill="#e9b44c">
-                <circle cx="56" cy="124" r="2" />
-                <circle cx="88" cy="120" r="2" />
-                <circle cx="72" cy="152" r="2" />
-                <circle cx="104" cy="144" r="2" />
-                <circle cx="44" cy="142" r="2" />
+            {{-- Garlic rice --}}
+            <ellipse cx="76" cy="160" rx="44" ry="9" fill="#000000" opacity=".1" filter="url(#ra-blur)" />
+            <path d="M30 158 C26 126 52 106 76 112 C96 100 124 112 122 146 C124 168 40 178 30 158 Z" fill="url(#ra-rice)" />
+            <g clip-path="url(#ra-rice-mound)">
+                @foreach ($points(110, 76, 140, 48, 32, 1) as $grain)
+                    <ellipse cx="{{ $grain['x'] }}" cy="{{ $grain['y'] }}" rx="2.6" ry="1.15" transform="rotate({{ $grain['rotate'] }} {{ $grain['x'] }} {{ $grain['y'] }})" fill="#fffefa" stroke="#d9cdb8" stroke-opacity=".55" stroke-width=".35" />
+                @endforeach
+                @foreach ($points(14, 76, 138, 34, 20, 2) as $bit)
+                    <circle cx="{{ $bit['x'] }}" cy="{{ $bit['y'] }}" r="{{ 0.8 + $bit['size'] }}" fill="{{ $bit['size'] > 0.5 ? '#c98a34' : '#e3ad55' }}" />
+                @endforeach
+                <path d="M30 158 C26 126 52 106 76 112 C96 100 124 112 122 146 C124 168 40 178 30 158 Z" fill="url(#ra-sheen)" opacity=".45" />
             </g>
 
-            <path d="M112 112 C116 90 156 86 170 104 C186 124 166 142 144 138 C124 144 106 132 112 112 Z" fill="#ffffff" stroke="{{ $ink }}" stroke-width="3" stroke-linejoin="round" />
-            <circle cx="142" cy="114" r="14" fill="#f7a826" stroke="{{ $ink }}" stroke-width="3" />
-            <ellipse cx="137" cy="109" rx="4" ry="2.6" fill="#ffffff" fill-opacity=".85" />
+            {{-- Sunny-side-up egg --}}
+            <path d="M110 112 C114 88 158 84 172 102 C190 124 166 144 144 140 C122 146 104 134 110 112 Z" fill="url(#ra-egg)" />
+            <path d="M110 112 C114 88 158 84 172 102 C190 124 166 144 144 140 C122 146 104 134 110 112 Z" fill="none" stroke="#c4843a" stroke-opacity=".28" stroke-width="2.2" filter="url(#ra-blur)" />
+            <ellipse cx="143" cy="124" rx="13" ry="3.5" fill="#000000" opacity=".08" filter="url(#ra-blur)" />
+            <circle cx="142" cy="113" r="15" fill="url(#ra-yolk)" />
+            <ellipse cx="136.5" cy="107" rx="5" ry="3" fill="#ffffff" opacity=".85" />
 
             @if (($art['side'] ?? null) === 'lumpia')
-                <g transform="rotate(-10 106 162)">
-                    <rect x="58" y="151" width="94" height="22" rx="11" fill="#d98a2b" stroke="{{ $ink }}" stroke-width="3" />
-                    <path d="M82 154 l-6 16 M102 154 l-6 16 M122 154 l-6 16 M142 154 l-6 16" stroke="#a35d12" stroke-width="2.5" stroke-linecap="round" />
-                </g>
-                <g transform="rotate(-4 112 178)">
-                    <rect x="66" y="167" width="92" height="22" rx="11" fill="#e8a142" stroke="{{ $ink }}" stroke-width="3" />
-                    <path d="M90 170 l-6 16 M110 170 l-6 16 M130 170 l-6 16 M150 170 l-6 16" stroke="#a35d12" stroke-width="2.5" stroke-linecap="round" />
-                </g>
+                @foreach ([['angle' => -10, 'cx' => 106, 'cy' => 162, 'x' => 58, 'y' => 151, 'w' => 94], ['angle' => -4, 'cx' => 112, 'cy' => 178, 'x' => 66, 'y' => 167, 'w' => 92]] as $index => $roll)
+                    <g transform="rotate({{ $roll['angle'] }} {{ $roll['cx'] }} {{ $roll['cy'] }})">
+                        <ellipse cx="{{ $roll['x'] + $roll['w'] / 2 }}" cy="{{ $roll['y'] + 22 }}" rx="{{ $roll['w'] / 2 }}" ry="4" fill="#000000" opacity=".16" filter="url(#ra-blur)" />
+                        <rect x="{{ $roll['x'] }}" y="{{ $roll['y'] }}" width="{{ $roll['w'] }}" height="22" rx="11" fill="url(#ra-fried)" />
+                        <rect x="{{ $roll['x'] }}" y="{{ $roll['y'] }}" width="{{ $roll['w'] }}" height="22" rx="11" fill="#ffffff" filter="url(#ra-grain)" opacity=".35" />
+                        @foreach ($points(16, $roll['x'] + $roll['w'] / 2, $roll['y'] + 10, $roll['w'] / 2 - 9, 7, 10 + $index) as $blister)
+                            <ellipse cx="{{ $blister['x'] }}" cy="{{ $blister['y'] }}" rx="{{ 1.5 + $blister['size'] * 2 }}" ry="{{ 1 + $blister['size'] }}" fill="{{ $blister['size'] > 0.55 ? '#fbe2a0' : '#7a3a0b' }}" opacity=".45" />
+                        @endforeach
+                        <ellipse cx="{{ $roll['x'] + 4 }}" cy="{{ $roll['y'] + 11 }}" rx="4" ry="10" fill="#6a330a" opacity=".3" />
+                        <ellipse cx="{{ $roll['x'] + $roll['w'] - 4 }}" cy="{{ $roll['y'] + 11 }}" rx="4" ry="10" fill="#6a330a" opacity=".3" />
+                    </g>
+                @endforeach
             @else
                 @foreach ([[78, 182], [112, 188], [146, 178]] as [$x, $y])
-                    <g transform="translate({{ $x }} {{ $y }})">
-                        <path d="M-17 2 C-19 -14 -10 -22 0 -22 C10 -22 19 -14 17 2 C10 8 -10 8 -17 2 Z" fill="#ecc57c" stroke="{{ $ink }}" stroke-width="3" stroke-linejoin="round" />
-                        <path d="M-9 -12 C-6 -8 -4 -8 -3 -4 M9 -12 C6 -8 4 -8 3 -4" stroke="{{ $ink }}" stroke-opacity=".35" stroke-width="2" stroke-linecap="round" fill="none" />
-                        <ellipse cy="-17" rx="6" ry="3.5" fill="#ee7f1a" stroke="{{ $ink }}" stroke-width="2" />
-                    </g>
+                    <x-menu-art-siomai :x="$x" :y="$y" />
                 @endforeach
             @endif
         @elseif ($type === 'tisa')
-            <ellipse cx="100" cy="122" rx="66" ry="14" fill="#f3e6d4" stroke="{{ $ink }}" stroke-width="3.5" />
+            <ellipse cx="102" cy="201" rx="76" ry="12" fill="url(#ra-shadow)" />
+            <ellipse cx="100" cy="122" rx="66" ry="14" fill="#e3dacb" />
+            <ellipse cx="100" cy="125" rx="58" ry="9" fill="#cfc4b2" />
             @foreach ([[100, 102], [78, 114], [122, 114], [100, 126]] as [$x, $y])
-                <g transform="translate({{ $x }} {{ $y }})">
-                    <path d="M-17 2 C-19 -14 -10 -22 0 -22 C10 -22 19 -14 17 2 C10 8 -10 8 -17 2 Z" fill="#ecc57c" stroke="{{ $ink }}" stroke-width="3" stroke-linejoin="round" />
-                    <path d="M-9 -12 C-6 -8 -4 -8 -3 -4 M9 -12 C6 -8 4 -8 3 -4" stroke="{{ $ink }}" stroke-opacity=".35" stroke-width="2" stroke-linecap="round" fill="none" />
-                    <ellipse cy="-17" rx="6" ry="3.5" fill="#ee7f1a" stroke="{{ $ink }}" stroke-width="2" />
+                <x-menu-art-siomai :x="$x" :y="$y" />
+            @endforeach
+            @foreach ([[88, 96, 4.2, 2.2], [113, 92, 3.6, 2], [67, 107, 3.4, 1.8], [133, 108, 3.8, 2.1], [96, 119, 3.2, 1.7], [111, 123, 2.8, 1.5], [80, 112, 2.4, 1.3]] as [$x, $y, $rx, $ry])
+                <ellipse cx="{{ $x }}" cy="{{ $y }}" rx="{{ $rx }}" ry="{{ $ry }}" fill="url(#ra-chili)" opacity=".92" />
+                <ellipse cx="{{ $x - $rx * 0.3 }}" cy="{{ $y - $ry * 0.35 }}" rx="{{ $rx * 0.3 }}" ry="{{ $ry * 0.25 }}" fill="#ffffff" opacity=".7" />
+            @endforeach
+            @foreach ($points(10, 100, 108, 26, 12, 4) as $bit)
+                <circle cx="{{ $bit['x'] }}" cy="{{ $bit['y'] }}" r="{{ 0.8 + $bit['size'] }}" fill="#d9a04a" />
+            @endforeach
+
+            <path d="M34 122 C36 160 52 198 100 200 C148 198 164 160 166 122 C150 136 50 136 34 122 Z" fill="url(#ra-bowl)" />
+            <path d="M34 122 C36 160 52 198 100 200 C148 198 164 160 166 122" fill="none" stroke="#000000" stroke-opacity=".08" stroke-width="1" />
+            <path d="M34 122 C50 136 150 136 166 122" fill="none" stroke="#ffffff" stroke-width="2.5" />
+            <path d="M41 152 C64 166 136 166 159 152" stroke="#ee7f1a" stroke-width="4.5" fill="none" stroke-linecap="round" opacity=".9" />
+            <path d="M46 132 C48 158 58 182 74 192" stroke="#ffffff" stroke-opacity=".75" stroke-width="3" fill="none" stroke-linecap="round" />
+
+            @foreach ([[156, 110, 0], [170, 126, 25]] as [$x, $y, $angle])
+                <g transform="translate({{ $x }} {{ $y }}) rotate({{ $angle }})">
+                    <ellipse cy="3" rx="13" ry="4" fill="#000000" opacity=".15" filter="url(#ra-blur)" />
+                    <circle r="12.5" fill="#4f8a24" />
+                    <circle r="10.5" fill="url(#ra-lime)" />
+                    <path d="M0 -9 V9 M-9 0 H9 M-6.4 -6.4 L6.4 6.4 M6.4 -6.4 L-6.4 6.4" stroke="#c4d47a" stroke-width=".8" />
+                    <circle r="1.6" fill="#eef4c4" />
+                    <ellipse cx="-4" cy="-5" rx="3" ry="1.6" fill="#ffffff" opacity=".6" />
                 </g>
             @endforeach
-            <g fill="#c9361e">
-                <circle cx="88" cy="98" r="2.6" />
-                <circle cx="112" cy="94" r="2.2" />
-                <circle cx="68" cy="108" r="2" />
-                <circle cx="132" cy="110" r="2.4" />
-                <circle cx="96" cy="120" r="2" />
-                <circle cx="110" cy="124" r="1.8" />
-            </g>
-            <path d="M34 122 C36 160 52 198 100 200 C148 198 164 160 166 122 C150 136 50 136 34 122 Z" fill="#ffffff" stroke="{{ $ink }}" stroke-width="3.5" stroke-linejoin="round" />
-            <path d="M40 150 C62 164 138 164 160 150" stroke="#ee7f1a" stroke-width="5" fill="none" stroke-linecap="round" />
-            <g transform="translate(160 106)">
-                <circle r="14" fill="#7fb241" stroke="{{ $ink }}" stroke-width="3" />
-                <circle r="9" fill="#e6efa0" />
-                <path d="M0 -9 V9 M-9 0 H9 M-6 -6 L6 6 M6 -6 L-6 6" stroke="#b8c96a" stroke-width="1.5" />
-            </g>
         @elseif ($type === 'fries')
-            <g fill="#f9c74f" stroke="{{ $ink }}" stroke-width="2.5" stroke-linejoin="round">
-                <rect x="60" y="56" width="12" height="80" rx="3" transform="rotate(-10 66 96)" />
-                <rect x="76" y="40" width="12" height="90" rx="3" transform="rotate(-4 82 85)" />
-                <rect x="124" y="54" width="12" height="80" rx="3" transform="rotate(12 130 94)" />
-                <rect x="108" y="38" width="12" height="90" rx="3" transform="rotate(7 114 83)" />
-                <rect x="92" y="30" width="12" height="96" rx="3" transform="rotate(2 98 78)" />
-                <rect x="84" y="52" width="12" height="80" rx="3" transform="rotate(-14 90 92)" />
-                <rect x="104" y="50" width="12" height="80" rx="3" transform="rotate(14 110 90)" />
-            </g>
-            <g fill="#ee7f1a">
-                <circle cx="62" cy="62" r="1.8" />
-                <circle cx="81" cy="46" r="1.8" />
-                <circle cx="98" cy="36" r="1.8" />
-                <circle cx="116" cy="44" r="1.8" />
-                <circle cx="133" cy="62" r="1.8" />
-                <circle cx="87" cy="60" r="1.8" />
-                <circle cx="111" cy="57" r="1.8" />
-            </g>
-            <path d="M46 112 Q100 134 154 112 L140 204 Q100 210 60 204 Z" fill="#ee7f1a" stroke="{{ $ink }}" stroke-width="3.5" stroke-linejoin="round" />
-            <path d="M51 142 Q100 160 149 142" stroke="#fff8ef" stroke-width="5" fill="none" stroke-linecap="round" />
-            <g transform="translate(100 178)">
-                <circle r="15" fill="#fff8ef" stroke="{{ $ink }}" stroke-width="2.5" />
-                <path d="M-8 5 A8 8 0 0 1 8 5 Z" fill="#a8a754" />
-                <path d="M-3.5 -1 L3.5 -1 L2.6 7 L-2.6 7 Z" fill="#f7a826" stroke="{{ $ink }}" stroke-width="1.1" stroke-linejoin="round" />
-            </g>
+            <ellipse cx="102" cy="207" rx="62" ry="10" fill="url(#ra-shadow)" />
+            @foreach ([[60, 58, 82, -10], [130, 62, 76, 14], [74, 42, 92, -5], [118, 48, 86, 10], [88, 30, 98, 1], [104, 36, 94, 6], [82, 54, 84, -15], [98, 50, 86, 12], [112, 44, 90, -3]] as [$x, $y, $height, $angle])
+                <g transform="rotate({{ $angle }} {{ $x + 5.5 }} {{ $y + $height / 2 }})">
+                    <rect x="{{ $x }}" y="{{ $y }}" width="11" height="{{ $height }}" rx="2.5" fill="url(#ra-fry)" />
+                    <rect x="{{ $x }}" y="{{ $y }}" width="11" height="8" rx="2.5" fill="#9a5a14" opacity=".35" />
+                    <rect x="{{ $x + 3 }}" y="{{ $y + 4 }}" width="2" height="{{ $height - 12 }}" rx="1" fill="#ffffff" opacity=".35" />
+                    @foreach ([3, 7, 12] as $offset)
+                        <circle cx="{{ $x + ($offset % 9) + 1.5 }}" cy="{{ $y + $offset + 2 }}" r=".9" fill="#e4651a" opacity=".75" />
+                    @endforeach
+                </g>
+            @endforeach
+
+            <path d="M44 112 Q100 134 156 112 L141 204 Q100 211 59 204 Z" fill="url(#ra-carton)" />
+            <path d="M100 124 L100 209" stroke="#000000" stroke-opacity=".08" stroke-width="7" />
+            <path d="M44 112 Q100 134 156 112" stroke="#ffb199" stroke-opacity=".8" stroke-width="2" fill="none" />
+            <path d="M53 124 L62 200" stroke="#ffffff" stroke-opacity=".3" stroke-width="5" stroke-linecap="round" />
+            <circle cx="100" cy="170" r="20.5" fill="#000000" opacity=".15" filter="url(#ra-blur)" />
+            <image href="{{ $logo }}" x="80" y="149" width="40" height="40" />
         @elseif ($type === 'nachos')
-            <g fill="#f2c04b" stroke="{{ $ink }}" stroke-width="2.5" stroke-linejoin="round">
-                <path d="M46 122 L70 64 L100 118 Z" />
-                <path d="M84 118 L110 52 L134 116 Z" />
-                <path d="M116 122 L152 72 L162 126 Z" />
-                <path d="M62 126 L92 84 L114 128 Z" />
-                <path d="M102 128 L130 88 L148 130 Z" />
-            </g>
-            <path d="M58 116 C64 98 82 106 94 98 C106 90 120 102 132 96 C146 92 152 106 148 118 Z" fill="#f7a826" stroke="{{ $ink }}" stroke-width="2.5" stroke-linejoin="round" />
-            <path d="M74 104 c0 8 4 10 4 14 M118 100 c0 8 4 12 3 18" stroke="#f7a826" stroke-width="5" stroke-linecap="round" fill="none" />
-            <path d="M96 92 C98 82 114 82 116 92 C112 98 100 98 96 92 Z" fill="#ffffff" stroke="{{ $ink }}" stroke-width="2.2" />
-            <g stroke="{{ $ink }}" stroke-width="2">
-                <circle cx="80" cy="102" r="5.5" fill="#7fb241" />
-                <circle cx="132" cy="104" r="5" fill="#7fb241" />
-                <circle cx="106" cy="108" r="4.5" fill="#c9361e" />
-            </g>
-            <path d="M30 118 Q100 130 170 118 C164 170 136 202 100 202 C64 202 36 170 30 118 Z" fill="#a8a754" stroke="{{ $ink }}" stroke-width="3.5" stroke-linejoin="round" />
-            <path d="M38 146 Q100 162 162 146" stroke="#fff8ef" stroke-opacity=".75" stroke-width="4" fill="none" stroke-linecap="round" />
+            <ellipse cx="102" cy="206" rx="70" ry="11" fill="url(#ra-shadow)" />
+            {{-- Tortilla chips, with corners rounded by a stroke in the same gradient --}}
+            @foreach (['M40 124 L66 66 L98 120 Z', 'M116 124 L156 72 L166 128 Z', 'M66 100 L94 58 L112 104 Z', 'M110 100 L140 62 L150 108 Z', 'M80 118 L108 48 L138 116 Z', 'M58 128 L86 84 L114 132 Z', 'M98 132 L128 88 L152 134 Z'] as $chip)
+                <path d="{{ $chip }}" fill="url(#ra-chip)" stroke="url(#ra-chip)" stroke-width="5" stroke-linejoin="round" />
+                <path d="{{ $chip }}" fill="#ffffff" filter="url(#ra-grain-dark)" opacity=".55" />
+                <path d="{{ $chip }}" fill="none" stroke="#b97a22" stroke-opacity=".35" stroke-width=".8" stroke-linejoin="round" />
+            @endforeach
+
+            {{-- Cheese sauce drizzled over the top, with drips and a wet shine --}}
+            @php($cheese = 'M48 114 C60 100 72 118 86 104 S108 96 118 106 S140 98 154 112')
+            <path d="{{ $cheese }}" stroke="url(#ra-cheese)" stroke-width="10" stroke-linecap="round" fill="none" />
+            <path d="M70 90 C80 82 90 98 102 86 S122 82 134 92" stroke="url(#ra-cheese)" stroke-width="7" stroke-linecap="round" fill="none" />
+            <path d="M64 110 c1 6 -1 10 0 14 M100 102 c1 7 -1 11 1 16 M138 104 c1 5 0 9 -1 12 M86 92 c1 4 0 7 0 9" stroke="#f08c00" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M52 110 C62 99 72 114 84 102 M104 98 C112 96 116 102 120 101 M70 88 C78 83 86 92 94 87" stroke="#ffffff" stroke-opacity=".6" stroke-width="1.4" stroke-linecap="round" fill="none" />
+            <path d="M96 92 C98 81 115 81 117 92 C113 99 100 99 96 92 Z" fill="#fdfaf3" />
+            <path d="M99 90 C102 85 109 85 111 88" stroke="#ffffff" stroke-width="1.6" fill="none" stroke-linecap="round" />
+            @foreach ([[78, 106, 6], [134, 104, 5.4], [110, 98, 4.8]] as [$x, $y, $r])
+                <circle cx="{{ $x }}" cy="{{ $y }}" r="{{ $r }}" fill="#3f7a1c" />
+                <circle cx="{{ $x }}" cy="{{ $y }}" r="{{ $r * 0.72 }}" fill="#a6cf63" />
+                <circle cx="{{ $x }}" cy="{{ $y }}" r="{{ $r * 0.3 }}" fill="#eef4cf" />
+            @endforeach
+
+            <path d="M30 118 Q100 130 170 118 C164 170 136 204 100 204 C64 204 36 170 30 118 Z" fill="url(#ra-ceramic)" />
+            <path d="M30 118 Q100 130 170 118" stroke="#e4e3a8" stroke-width="2.4" fill="none" />
+            <path d="M44 132 C48 160 62 182 80 194" stroke="#ffffff" stroke-opacity=".35" stroke-width="4" fill="none" stroke-linecap="round" />
         @elseif ($type === 'noodles')
-            <g stroke="{{ $ink }}" stroke-opacity=".25" stroke-width="3" fill="none" stroke-linecap="round">
-                <path d="M78 64 C70 54 86 46 78 34" />
-                <path d="M98 58 C90 48 106 40 98 28" />
+            <ellipse cx="102" cy="208" rx="72" ry="10" fill="url(#ra-shadow)" />
+            <g filter="url(#ra-blur-lg)" stroke="#ffffff" stroke-opacity=".75" stroke-width="5" fill="none" stroke-linecap="round">
+                <path d="M78 76 C68 62 88 52 78 36" />
+                <path d="M100 70 C92 56 108 46 100 30" />
             </g>
-            <g stroke-linecap="round">
-                <line x1="128" y1="16" x2="102" y2="120" stroke="{{ $ink }}" stroke-width="9" />
-                <line x1="128" y1="16" x2="102" y2="120" stroke="#c58a4a" stroke-width="4.5" />
-                <line x1="150" y1="24" x2="114" y2="120" stroke="{{ $ink }}" stroke-width="9" />
-                <line x1="150" y1="24" x2="114" y2="120" stroke="#c58a4a" stroke-width="4.5" />
+            @foreach ([[128, 14, 14.5], [150, 22, 20.5]] as [$x, $y, $angle])
+                <g transform="translate({{ $x }} {{ $y }}) rotate({{ $angle }})">
+                    <rect x="-3" width="6" height="110" rx="3" fill="url(#ra-wood)" />
+                </g>
+            @endforeach
+
+            <ellipse cx="100" cy="118" rx="74" ry="20" fill="url(#ra-carbonara)" />
+            <g fill="none" stroke-linecap="round">
+                @foreach ([[44, 116], [56, 106], [52, 126], [70, 111], [64, 121]] as [$x, $y])
+                    <path d="M{{ $x }} {{ $y }} c6 -6 12 6 18 0 s12 6 18 0 s12 6 18 0 s12 6 18 0 s12 6 18 0" stroke="#e98f3a" stroke-width="3.2" />
+                    <path d="M{{ $x }} {{ $y - 0.8 }} c6 -6 12 6 18 0 s12 6 18 0 s12 6 18 0 s12 6 18 0 s12 6 18 0" stroke="#ffe3b5" stroke-width="1" opacity=".8" />
+                @endforeach
             </g>
-            <ellipse cx="100" cy="118" rx="74" ry="20" fill="#f4b860" stroke="{{ $ink }}" stroke-width="3.5" />
-            <g stroke="#e07b27" stroke-width="3" fill="none" stroke-linecap="round">
-                <path d="M44 116 c6 -7 12 7 18 0 s12 7 18 0 s12 7 18 0 s12 7 18 0 s12 7 18 0 s12 7 18 0" />
-                <path d="M58 106 c6 -7 12 7 18 0 s12 7 18 0 s12 7 18 0 s12 7 18 0" />
-                <path d="M56 126 c6 -7 12 7 18 0 s12 7 18 0 s12 7 18 0 s12 7 18 0 s12 7 18 0" />
-            </g>
-            <g fill="#c9361e">
-                <rect x="70" y="110" width="4" height="4" rx="1" transform="rotate(20 72 112)" />
-                <rect x="112" y="104" width="4" height="4" rx="1" transform="rotate(-15 114 106)" />
-                <rect x="128" y="120" width="4" height="4" rx="1" />
-                <rect x="88" y="124" width="4" height="4" rx="1" transform="rotate(35 90 126)" />
-            </g>
-            <path d="M76 100 l14 4 M120 126 l12 -3" stroke="#2f3b1f" stroke-width="4" stroke-linecap="round" />
-            <path d="M26 118 C28 168 60 204 100 204 C140 204 172 168 174 118 C160 138 40 138 26 118 Z" fill="#2a1d15" stroke="{{ $ink }}" stroke-width="3.5" stroke-linejoin="round" />
-            <path d="M36 150 C60 170 140 170 164 150" stroke="#ee7f1a" stroke-width="5" fill="none" stroke-linecap="round" />
-            <path d="M100 172 c-8 6 -9 14 -3 19 c-1 -5 2 -8 5 -9 c-1 4 1 7 4 9 c5 -6 2 -13 -6 -19 Z" fill="#e8501e" />
+            @foreach ($points(14, 100, 116, 56, 13, 3) as $flake)
+                <rect x="{{ $flake['x'] }}" y="{{ $flake['y'] }}" width="{{ 1.6 + $flake['size'] * 2 }}" height="{{ 1.2 + $flake['size'] }}" rx=".5" transform="rotate({{ $flake['rotate'] }} {{ $flake['x'] }} {{ $flake['y'] }})" fill="{{ $flake['size'] > 0.6 ? '#b8200e' : '#2f3b1f' }}" />
+            @endforeach
+            @foreach ($points(10, 100, 114, 50, 12, 6) as $seed)
+                <ellipse cx="{{ $seed['x'] }}" cy="{{ $seed['y'] }}" rx="1.4" ry=".7" transform="rotate({{ $seed['rotate'] }} {{ $seed['x'] }} {{ $seed['y'] }})" fill="#fff6dc" />
+            @endforeach
+
+            <path d="M26 118 C28 168 60 206 100 206 C140 206 172 168 174 118 C160 138 40 138 26 118 Z" fill="url(#ra-black-bowl)" />
+            <path d="M26 118 C40 138 160 138 174 118" fill="none" stroke="#6b5d55" stroke-width="2" />
+            <path d="M42 140 C46 166 62 186 82 196" stroke="#ffffff" stroke-opacity=".22" stroke-width="5" fill="none" stroke-linecap="round" />
+            <path d="M38 150 C62 170 138 170 162 150" stroke="#c9361e" stroke-width="2.5" fill="none" />
         @elseif ($type === 'pouch')
-            <path d="M56 44 L144 44 L152 196 C120 206 80 206 48 196 Z" fill="#6f8f3a" stroke="{{ $ink }}" stroke-width="3.5" stroke-linejoin="round" />
-            <path d="M56 44 L144 44 L145 62 L55 62 Z" fill="#5a7a2c" stroke="{{ $ink }}" stroke-width="3" stroke-linejoin="round" />
-            <path d="M56 44 l5.5 -6 l5.5 6 l5.5 -6 l5.5 6 l5.5 -6 l5.5 6 l5.5 -6 l5.5 6 l5.5 -6 l5.5 6 l5.5 -6 l5.5 6 l5.5 -6 l5.5 6 l5.5 -6 l5.5 6" fill="#5a7a2c" stroke="{{ $ink }}" stroke-width="2.5" stroke-linejoin="round" />
-            <text x="100" y="90" text-anchor="middle" font-family="'Bricolage Grotesque', sans-serif" font-weight="800" font-size="19" fill="#fff8ef">CRISPY</text>
-            <text x="100" y="106" text-anchor="middle" font-family="'Instrument Sans', sans-serif" font-weight="700" font-size="9" letter-spacing="1" fill="#fff8ef" fill-opacity=".85">FRUITS &amp; VEGGIES</text>
-            <ellipse cx="100" cy="152" rx="34" ry="32" fill="#fff8ef" stroke="{{ $ink }}" stroke-width="2.5" />
-            <g stroke="{{ $ink }}" stroke-width="1.6">
-                <rect x="78" y="138" width="14" height="8" rx="3" fill="#ee7f1a" transform="rotate(-20 85 142)" />
-                <rect x="98" y="132" width="12" height="9" rx="3" fill="#7fb241" transform="rotate(15 104 136)" />
-                <circle cx="118" cy="148" r="6" fill="#f6c343" />
-                <rect x="86" y="156" width="13" height="8" rx="3" fill="#d33a5a" transform="rotate(25 92 160)" />
-                <circle cx="106" cy="166" r="5" fill="#8a5bb0" />
-                <rect x="112" y="158" width="12" height="7" rx="3" fill="#ee7f1a" transform="rotate(-30 118 161)" />
-                <circle cx="80" cy="162" r="4.5" fill="#7fb241" />
-                <rect x="98" y="148" width="10" height="7" rx="3" fill="#f6c343" transform="rotate(-8 103 151)" />
-            </g>
+            <ellipse cx="100" cy="206" rx="64" ry="9" fill="url(#ra-shadow)" />
+            <path d="M56 44 L144 44 L152 198 C120 208 80 208 48 198 Z" fill="url(#ra-pouch)" />
+            <path d="M56 44 L144 44 L145 62 L55 62 Z" fill="#3f5d1f" opacity=".55" />
+            <path d="M56 44 l5.5 -6 l5.5 6 l5.5 -6 l5.5 6 l5.5 -6 l5.5 6 l5.5 -6 l5.5 6 l5.5 -6 l5.5 6 l5.5 -6 l5.5 6 l5.5 -6 l5.5 6 l5.5 -6 l5.5 6" fill="#56782c" />
+            <path d="M66 66 L60 192" stroke="#ffffff" stroke-opacity=".28" stroke-width="7" stroke-linecap="round" />
+            <path d="M136 66 L140 190" stroke="#ffffff" stroke-opacity=".15" stroke-width="3" stroke-linecap="round" />
+            <image href="{{ $logo }}" x="88" y="64" width="24" height="24" />
+            <text x="100" y="104" text-anchor="middle" font-family="'Bricolage Grotesque', sans-serif" font-weight="800" font-size="18" fill="#fff8ef">CRISPY</text>
+            <text x="100" y="117" text-anchor="middle" font-family="'Instrument Sans', sans-serif" font-weight="700" font-size="7.5" letter-spacing="1" fill="#fff8ef" fill-opacity=".85">FRUITS &amp; VEGGIES</text>
+            <ellipse cx="100" cy="158" rx="33" ry="30" fill="#fff8ef" opacity=".95" />
+            <ellipse cx="100" cy="158" rx="33" ry="30" fill="none" stroke="#000000" stroke-opacity=".12" stroke-width="1.5" />
+            @foreach ([[84, 146, 14, 8, -20, '#ee7f1a'], [104, 140, 12, 9, 15, '#7fb241'], [118, 156, 11, 11, 0, '#f6c343'], [90, 166, 13, 8, 25, '#d33a5a'], [108, 172, 10, 10, 0, '#8a5bb0'], [116, 164, 12, 7, -30, '#ee7f1a'], [80, 160, 9, 9, 0, '#7fb241'], [100, 154, 10, 7, -8, '#f6c343']] as [$x, $y, $w, $h, $angle, $color])
+                <g transform="rotate({{ $angle }} {{ $x }} {{ $y }})">
+                    <rect x="{{ $x - $w / 2 }}" y="{{ $y - $h / 2 }}" width="{{ $w }}" height="{{ $h }}" rx="3" fill="{{ $color }}" />
+                    <rect x="{{ $x - $w / 2 }}" y="{{ $y - $h / 2 }}" width="{{ $w }}" height="{{ $h }}" rx="3" fill="url(#ra-sheen)" />
+                </g>
+            @endforeach
+            <path d="M74 140 C80 132 90 129 98 129" stroke="#ffffff" stroke-width="2" stroke-linecap="round" fill="none" opacity=".8" />
         @endif
     </svg>
 @endif

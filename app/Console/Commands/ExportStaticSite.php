@@ -67,6 +67,9 @@ class ExportStaticSite extends Command
             $html = str_replace([self::PLACEHOLDER_ROOT, str_replace('/', '\/', self::PLACEHOLDER_ROOT)], '', $html);
         }
 
+        // Drop Blade's indentation; about a third of the page is leading whitespace.
+        $html = preg_replace('/\n[ \t]+/', "\n", $html);
+
         $files->deleteDirectory($output);
         $files->ensureDirectoryExists($output);
         $files->put("{$output}/index.html", $html);
