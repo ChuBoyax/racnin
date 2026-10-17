@@ -36,7 +36,7 @@
             <div class="absolute top-4 left-4 z-20 flex flex-wrap gap-1.5">
                 @foreach ($item['badges'] as $badge)
                     <span class="badge-pill {{ $badges[$badge]['class'] }}">
-                        <x-icon :name="$badges[$badge]['icon']" class="size-3" />
+                        <x-site-icon :name="$badges[$badge]['icon']" class="size-3" />
                         {{ $badges[$badge]['label'] }}
                     </span>
                 @endforeach
@@ -73,7 +73,7 @@
                     @endisset
                 </p>
                 <button type="button" data-add="{{ $id }}" class="add-btn" aria-label="Add {{ $item['name'] }} to order">
-                    <x-icon name="plus" class="size-4" />
+                    <x-site-icon name="plus" class="size-4" />
                     <span>Add</span>
                 </button>
             </div>

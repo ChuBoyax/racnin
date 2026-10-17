@@ -15,11 +15,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::firstOrCreate(
+            ['email' => 'admin@racnin.test'],
+            ['name' => 'RacNin Admin', 'password' => 'password', 'email_verified_at' => now()],
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            InventorySeeder::class,
+            MenuSeeder::class,
         ]);
+
+        // Sample trading history, so the dashboard isn't empty while you try things out.
+        if (app()->isLocal()) {
+            $this->call(DemoSalesSeeder::class);
+        }
     }
 }

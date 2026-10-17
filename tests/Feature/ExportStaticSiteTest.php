@@ -39,6 +39,23 @@ class ExportStaticSiteTest extends TestCase
         $this->assertStringContainsString('content="https://racnin.example/images/logo-mark.png"', $html);
     }
 
+    public function test_the_staff_login_button_is_left_out_when_there_is_no_login_page(): void
+    {
+        $this->artisan('site:export', ['--output' => self::OUTPUT])->assertSuccessful();
+
+        $html = File::get(base_path(self::OUTPUT.'/index.html'));
+
+        $this->assertStringNotContainsString('Staff login', $html);
+        $this->assertStringNotContainsString('/admin/login', $html);
+    }
+
+    public function test_the_staff_login_button_points_at_the_given_login_page(): void
+    {
+        $this->artisan('site:export', ['--output' => self::OUTPUT, '--login-url' => 'https://admin.racnin.example/admin/login'])->assertSuccessful();
+
+        $this->assertStringContainsString('href="https://admin.racnin.example/admin/login"', File::get(base_path(self::OUTPUT.'/index.html')));
+    }
+
     public function test_it_refuses_to_replace_a_folder_that_is_not_an_export(): void
     {
         $this->artisan('site:export', ['--output' => '.'])->assertFailed();

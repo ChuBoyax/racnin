@@ -10,7 +10,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 
-#[Signature('site:export {--output=dist : Folder to write the site to, relative to the project root} {--url= : Public site URL for absolute links, e.g. https://racnin.vercel.app}')]
+#[Signature('site:export {--output=dist : Folder to write the site to, relative to the project root} {--url= : Public site URL for absolute links, e.g. https://racnin.vercel.app} {--login-url= : Where the footer\'s staff login button goes; without it the button is left out, since a static host has no login page}')]
 #[Description('Render the landing page to static HTML for hosts without PHP, like Vercel')]
 class ExportStaticSite extends Command
 {
@@ -61,7 +61,8 @@ class ExportStaticSite extends Command
         URL::forceRootUrl($root);
         URL::forceScheme(parse_url($root, PHP_URL_SCHEME) ?: 'https');
 
-        $html = $home()->render();
+        // The admin isn't part of a static export, so only link to a login page that exists somewhere.
+        $html = $home()->with('staffLoginUrl', $this->option('login-url') ?: null)->render();
 
         if ($siteUrl === '') {
             $html = str_replace([self::PLACEHOLDER_ROOT, str_replace('/', '\/', self::PLACEHOLDER_ROOT)], '', $html);

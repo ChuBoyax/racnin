@@ -4,14 +4,14 @@
     <div class="flex h-full flex-col">
         <header class="flex items-center gap-3 border-b border-ink/8 px-5 py-4 sm:px-6">
             <button type="button" data-step-back hidden class="icon-btn" aria-label="Back to your order">
-                <x-icon name="arrow-left" />
+                <x-site-icon name="arrow-left" />
             </button>
             <div class="min-w-0 flex-1">
                 <p data-step-label class="eyebrow text-brand-deep">Step 1 of 3</p>
                 <h2 id="order-title" data-step-title class="font-display text-2xl font-extrabold tracking-tight">Your order</h2>
             </div>
             <button type="button" data-order-close class="icon-btn" aria-label="Close order">
-                <x-icon name="x" />
+                <x-site-icon name="x" />
             </button>
         </header>
 
@@ -28,7 +28,7 @@
                     <p class="mt-1 text-ink-soft">{{ $shop['callout'] }} Pick something good.</p>
                     <button type="button" data-browse class="btn btn-primary mt-6">
                         Browse the menu
-                        <x-icon name="arrow-right" class="size-4" />
+                        <x-site-icon name="arrow-right" class="size-4" />
                     </button>
                 </div>
 
@@ -41,7 +41,7 @@
                         <p class="text-xs text-ink-soft">Perfect with any drink · ₱{{ reset($upsell['options']['choices']) }}</p>
                     </div>
                     <button type="button" data-add="{{ $upsell['id'] }}" class="add-btn">
-                        <x-icon name="plus" class="size-4" />
+                        <x-site-icon name="plus" class="size-4" />
                         <span>Add</span>
                     </button>
                 </div>
@@ -53,12 +53,12 @@
                     <span data-cart-subtotal class="font-display text-3xl font-extrabold tracking-tight">₱0</span>
                 </div>
                 <p class="flex items-center gap-2 text-xs text-ink-soft">
-                    <x-icon name="check" class="size-4 text-olive-deep" />
+                    <x-site-icon name="check" class="size-4 text-olive-deep" />
                     No online payment. Pay at the counter when you pick up.
                 </p>
                 <button type="button" data-goto-details class="btn btn-primary btn-lg w-full">
                     Checkout
-                    <x-icon name="arrow-right" class="size-4" />
+                    <x-site-icon name="arrow-right" class="size-4" />
                 </button>
             </footer>
         </section>
@@ -115,7 +115,7 @@
                 <div class="ticket">
                     <div class="flex items-center gap-3">
                         <span class="grid size-12 place-items-center rounded-full bg-olive text-ink">
-                            <x-icon name="check" class="size-6" />
+                            <x-site-icon name="check" class="size-6" />
                         </span>
                         <div>
                             <p class="text-xs font-bold tracking-[0.2em] text-ink-soft uppercase">Order code</p>
@@ -132,16 +132,16 @@
 
             <footer class="space-y-2 border-t border-ink/8 bg-white/60 px-5 py-5 sm:px-6">
                 <a data-send-messenger href="{{ $shop['messenger'] ?? $shop['facebook'] }}" target="_blank" rel="noopener" class="btn btn-primary btn-lg w-full">
-                    <x-icon name="message" class="size-5" />
+                    <x-site-icon name="message" class="size-5" />
                     Copy &amp; open Messenger
                 </a>
                 <div class="grid grid-cols-2 gap-2">
                     <a data-send-email href="mailto:{{ $shop['email'] }}" class="btn btn-ghost">
-                        <x-icon name="mail" class="size-4" />
+                        <x-site-icon name="mail" class="size-4" />
                         Email it
                     </a>
                     <button type="button" data-copy-order class="btn btn-ghost">
-                        <x-icon name="copy" class="size-4" />
+                        <x-site-icon name="copy" class="size-4" />
                         Copy
                     </button>
                 </div>
@@ -164,15 +164,15 @@
                 <div class="mt-2.5 flex items-center justify-between">
                     <div class="flex items-center gap-1 rounded-full bg-white p-1 ring-1 ring-ink/10">
                         <button type="button" data-line-dec class="qty-btn" aria-label="Remove one">
-                            <x-icon name="minus" class="size-4" />
+                            <x-site-icon name="minus" class="size-4" />
                         </button>
                         <span data-line-qty class="w-7 text-center text-sm font-bold tabular-nums"></span>
                         <button type="button" data-line-inc class="qty-btn" aria-label="Add one more">
-                            <x-icon name="plus" class="size-4" />
+                            <x-site-icon name="plus" class="size-4" />
                         </button>
                     </div>
                     <button type="button" data-line-remove class="flex items-center gap-1 text-xs font-semibold text-ink-soft hover:text-chili">
-                        <x-icon name="trash" class="size-3.5" />
+                        <x-site-icon name="trash" class="size-3.5" />
                         Remove
                     </button>
                 </div>

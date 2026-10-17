@@ -117,12 +117,12 @@
                         <span data-open-label>{{ $shop['hours']['label'] }}</span>
                     </span>
                     <button type="button" data-cart-open data-cart-target class="btn btn-primary py-2.5 pr-2.5 pl-4">
-                        <x-icon name="bag" class="size-4" />
+                        <x-site-icon name="bag" class="size-4" />
                         <span class="hidden sm:inline">Your order</span>
                         <span data-cart-count class="cart-count">0</span>
                     </button>
                     <button type="button" popovertarget="mobile-nav" class="icon-btn bg-white/70 ring-1 ring-ink/10 md:hidden" aria-label="Open menu">
-                        <x-icon name="menu" />
+                        <x-site-icon name="menu" />
                     </button>
                 </div>
             </div>
@@ -134,7 +134,7 @@
                         <span data-open-label>{{ $shop['hours']['label'] }}</span>
                     </span>
                     <button type="button" popovertarget="mobile-nav" popovertargetaction="hide" class="icon-btn" aria-label="Close menu">
-                        <x-icon name="x" />
+                        <x-site-icon name="x" />
                     </button>
                 </div>
                 <ul class="mt-8 space-y-1 font-display text-4xl font-extrabold tracking-tight">
@@ -161,7 +161,7 @@
                         <a href="#featured" class="group inline-flex items-center gap-2 rounded-full bg-white/70 py-1.5 pr-4 pl-1.5 text-sm font-semibold ring-1 ring-ink/10 backdrop-blur transition hover:ring-ink/25">
                             <span class="rounded-full bg-ink px-2.5 py-1 text-xs font-bold text-cream">New</span>
                             Lumpia Silog just dropped
-                            <x-icon name="arrow-right" class="size-4 transition group-hover:translate-x-0.5" />
+                            <x-site-icon name="arrow-right" class="size-4 transition group-hover:translate-x-0.5" />
                         </a>
 
                         <h1 class="mt-8 font-display text-[clamp(3.4rem,9.5vw,7.8rem)] leading-[0.86] font-extrabold tracking-[-0.045em]">
@@ -185,10 +185,10 @@
                         <div class="mt-10 flex flex-wrap items-center gap-3">
                             <a href="#menu" class="btn btn-primary btn-lg group">
                                 Start your order
-                                <x-icon name="arrow-right" class="size-4 transition group-hover:translate-x-1" />
+                                <x-site-icon name="arrow-right" class="size-4 transition group-hover:translate-x-1" />
                             </a>
                             <a href="#visit" class="btn btn-ghost btn-lg">
-                                <x-icon name="map-pin" class="size-4" />
+                                <x-site-icon name="map-pin" class="size-4" />
                                 Find us
                             </a>
                         </div>
@@ -292,14 +292,14 @@
                         <ul class="mt-6 flex flex-wrap gap-2 text-sm font-bold">
                             @foreach (['Garlic rice', 'Fried egg', 'Crispy lumpia'] as $part)
                                 <li class="flex items-center gap-1.5 rounded-full bg-cream/70 px-3.5 py-2 ring-1 ring-ink/10">
-                                    <x-icon name="check" class="size-4 text-olive-deep" />
+                                    <x-site-icon name="check" class="size-4 text-olive-deep" />
                                     {{ $part }}
                                 </li>
                             @endforeach
                         </ul>
                         <div class="mt-10 flex flex-wrap items-center gap-3">
                             <button type="button" data-add="lumpia-silog" class="btn btn-primary btn-lg">
-                                <x-icon name="plus" class="size-4" />
+                                <x-site-icon name="plus" class="size-4" />
                                 Add to order · ₱{{ $from('lumpia-silog') }}
                             </button>
                             <a href="#menu" data-filter-link="rice-meals" class="btn btn-ghost btn-lg">More rice meals</a>
@@ -330,7 +330,7 @@
                 <div class="story-sticky py-16">
                     <div class="mx-auto flex w-full max-w-7xl items-center justify-between px-5 pb-8 sm:px-8">
                         <p class="eyebrow text-brand-deep">
-                            <x-icon name="sparkles" class="size-4" />
+                            <x-site-icon name="sparkles" class="size-4" />
                             How it works
                         </p>
                         <div class="flex items-center gap-3 text-xs font-bold text-ink-soft">
@@ -350,7 +350,7 @@
                             <p class="mt-6 max-w-sm text-lg text-ink-soft">From base to bite to pickup, this is how ordering at RacNin works.</p>
                             <p class="mt-8 flex items-center gap-2 text-sm font-bold">
                                 Scroll
-                                <x-icon name="arrow-right" class="size-4 animate-pulse" />
+                                <x-site-icon name="arrow-right" class="size-4 animate-pulse" />
                             </p>
                         </li>
 
@@ -403,7 +403,7 @@
                                 <p class="mt-3 text-ink/80">Send us your order, pay at the counter and grab it {{ Str::lcfirst($address['landmark']) }} in {{ $address['area'] }}.</p>
                                 <a href="#menu" class="btn btn-primary btn-lg mt-6">
                                     Start your order
-                                    <x-icon name="arrow-right" class="size-4" />
+                                    <x-site-icon name="arrow-right" class="size-4" />
                                 </a>
                             </div>
                             <img src="{{ asset('images/logo-mark.webp') }}" alt="" width="512" height="512" loading="lazy" class="absolute -right-10 -bottom-10 size-[58%] max-w-72 rotate-12 rounded-full shadow-2xl">
@@ -422,7 +422,7 @@
                             <p class="mt-5 max-w-lg text-lg text-ink-soft">Every drink comes in 16 oz or 22 oz. Tap <strong class="text-ink">Add</strong>, then check out when you're ready. No account needed.</p>
                         </div>
                         <label class="search">
-                            <x-icon name="search" class="size-5 text-ink-soft" />
+                            <x-site-icon name="search" class="size-5 text-ink-soft" />
                             <span class="sr-only">Search the menu</span>
                             <input type="search" data-menu-search placeholder="Search matcha, siomai, frappe…" autocomplete="off" class="w-full bg-transparent text-base outline-none placeholder:text-ink-soft/70">
                         </label>
@@ -503,7 +503,7 @@
                                         @endisset
                                     </p>
                                     <button type="button" data-add="{{ $card['id'] }}" class="add-btn {{ $card['button'] }}" aria-label="Add {{ $item['name'] }} to order">
-                                        <x-icon name="plus" class="size-4" />
+                                        <x-site-icon name="plus" class="size-4" />
                                         <span>Add</span>
                                     </button>
                                 </div>
@@ -561,21 +561,21 @@
 
                             <ul class="mt-10 space-y-6">
                                 <li class="flex gap-4">
-                                    <span class="info-icon"><x-icon name="map-pin" /></span>
+                                    <span class="info-icon"><x-site-icon name="map-pin" /></span>
                                     <div>
                                         <p class="font-bold">{{ $address['street'] }}, {{ $address['area'] }}</p>
                                         <p class="text-ink-soft">{{ $address['city'] }} {{ $address['zip'] }} · {{ $address['landmark'] }}</p>
                                     </div>
                                 </li>
                                 <li class="flex gap-4">
-                                    <span class="info-icon"><x-icon name="clock" /></span>
+                                    <span class="info-icon"><x-site-icon name="clock" /></span>
                                     <div>
                                         <p class="font-bold">Open daily, {{ $shop['hours']['label'] }}</p>
                                         <p class="text-ink-soft">Dine in, take out, or order ahead here.</p>
                                     </div>
                                 </li>
                                 <li class="flex gap-4">
-                                    <span class="info-icon"><x-icon name="mail" /></span>
+                                    <span class="info-icon"><x-site-icon name="mail" /></span>
                                     <div>
                                         <a href="mailto:{{ $shop['email'] }}" class="font-bold underline-offset-4 hover:underline">{{ $shop['email'] }}</a>
                                         <p class="text-ink-soft">For bulk orders and events.</p>
@@ -586,11 +586,11 @@
 
                         <div class="mt-10 flex flex-wrap gap-3">
                             <a href="{{ $shop['maps'] }}" target="_blank" rel="noopener" class="btn btn-primary btn-lg">
-                                <x-icon name="navigation" class="size-4" />
+                                <x-site-icon name="navigation" class="size-4" />
                                 Get directions
                             </a>
                             <a href="{{ $shop['messenger'] ?? $shop['facebook'] }}" target="_blank" rel="noopener" class="btn btn-ghost btn-lg">
-                                <x-icon name="message" class="size-4" />
+                                <x-site-icon name="message" class="size-4" />
                                 Message us
                             </a>
                         </div>
@@ -642,8 +642,8 @@
                     <div>
                         <p class="eyebrow">Say hi</p>
                         <ul class="mt-4 space-y-2 font-semibold">
-                            <li><a href="{{ $shop['facebook'] }}" target="_blank" rel="noopener" class="footer-link inline-flex items-center gap-2"><x-icon name="facebook" class="size-4" /> Facebook</a></li>
-                            <li><a href="mailto:{{ $shop['email'] }}" class="footer-link inline-flex items-center gap-2"><x-icon name="mail" class="size-4" /> Email</a></li>
+                            <li><a href="{{ $shop['facebook'] }}" target="_blank" rel="noopener" class="footer-link inline-flex items-center gap-2"><x-site-icon name="facebook" class="size-4" /> Facebook</a></li>
+                            <li><a href="mailto:{{ $shop['email'] }}" class="footer-link inline-flex items-center gap-2"><x-site-icon name="mail" class="size-4" /> Email</a></li>
                             <li class="pt-2 text-sm font-medium text-ink/75">{{ $fullAddress }}</li>
                         </ul>
                     </div>
@@ -652,9 +652,17 @@
                 {{-- Letters sit on one line with no whitespace between spans, so the tracking stays tight --}}
                 <p class="footer-word mt-20 overflow-hidden pb-[0.12em] text-center font-display text-[clamp(3.2rem,13vw,12rem)] leading-[0.9] font-extrabold tracking-[-0.06em] whitespace-nowrap select-none" aria-hidden="true">@foreach (mb_str_split($shop['callout']) as $index => $letter)<span style="--i: {{ $index }}">{!! $letter === ' ' ? '&nbsp;' : e($letter) !!}</span>@endforeach</p>
 
-                <div class="flex flex-col gap-2 border-t border-ink/15 py-6 text-sm text-ink/70 sm:flex-row sm:justify-between">
+                <div class="flex flex-col gap-4 border-t border-ink/15 py-6 text-sm text-ink/70 lg:flex-row lg:items-center lg:justify-between">
                     <p>© {{ now()->year }} {{ $shop['name'] }}. All rights reserved.</p>
-                    <p>Prices and availability may change. {{ $shop['motto'] }}</p>
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+                        <p>Prices and availability may change. {{ $shop['motto'] }}</p>
+                        @isset($staffLoginUrl)
+                            <a href="{{ $staffLoginUrl }}" rel="nofollow" class="inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-ink py-2 pr-4 pl-3 font-bold text-cream transition duration-300 hover:bg-cream hover:text-ink sm:self-auto">
+                                <x-site-icon name="log-in" class="size-4" />
+                                Staff login
+                            </a>
+                        @endisset
+                    </div>
                 </div>
             </div>
         </footer>

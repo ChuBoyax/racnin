@@ -31,6 +31,14 @@ class WelcomePageTest extends TestCase
             ->assertSee($shop['email']);
     }
 
+    public function test_the_footer_takes_staff_to_the_admin_login(): void
+    {
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('href="'.route('filament.admin.auth.login').'"', false)
+            ->assertSee('Staff login');
+    }
+
     public function test_it_embeds_the_catalog_the_cart_prices_from(): void
     {
         config(['racnin.items.cafe-mocha.options.choices' => ['16 oz' => 41, '22 oz' => 52]]);
