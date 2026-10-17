@@ -30,6 +30,15 @@ class ExportStaticSiteTest extends TestCase
         $this->assertFileExists(base_path(self::OUTPUT.'/images/logo-mark.webp'));
     }
 
+    public function test_it_writes_the_menu_drawings_that_the_page_links_to(): void
+    {
+        $this->artisan('site:export', ['--output' => self::OUTPUT])->assertSuccessful();
+
+        $this->assertStringContainsString('src="/menu-art/cafe-mocha.svg?v=', File::get(base_path(self::OUTPUT.'/index.html')));
+        $this->assertStringStartsWith('<svg xmlns="http://www.w3.org/2000/svg"', File::get(base_path(self::OUTPUT.'/menu-art/cafe-mocha.svg')));
+        $this->assertFileDoesNotExist(base_path(self::OUTPUT.'/menu-art/combo-soda-siomai.svg'));
+    }
+
     public function test_it_uses_absolute_links_when_given_the_site_url(): void
     {
         $this->artisan('site:export', ['--output' => self::OUTPUT, '--url' => 'https://racnin.example'])->assertSuccessful();

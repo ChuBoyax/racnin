@@ -1,4 +1,6 @@
-@props(['shop', 'upsell'])
+@props(['shop', 'menu', 'upsell'])
+
+@php($upsellItem = $menu->item($upsell))
 
 <dialog data-order class="order-drawer" aria-labelledby="order-title">
     <div class="flex h-full flex-col">
@@ -22,7 +24,7 @@
 
                 <div data-cart-empty class="flex flex-col items-center py-14 text-center">
                     <div class="grid size-36 place-items-center rounded-full bg-latte/60">
-                        <x-menu-art :art="['type' => 'frappe', 'layers' => [['#f3d9bd', 1]], 'whip' => '#fff8ef', 'drizzle' => '#f3d9bd']" class="h-28 w-auto opacity-80" />
+                        <x-menu-art item="caramel-frappe" class="h-28 w-auto opacity-80" />
                     </div>
                     <p class="mt-6 font-display text-2xl font-extrabold tracking-tight">Your cup is empty.</p>
                     <p class="mt-1 text-ink-soft">{{ $shop['callout'] }} Pick something good.</p>
@@ -33,14 +35,14 @@
                 </div>
 
                 <div data-upsell hidden class="my-4 flex items-center gap-4 rounded-3xl bg-paper p-3 pr-4 ring-1 ring-ink/8">
-                    <div class="grid size-16 shrink-0 place-items-center rounded-2xl" style="background: color-mix(in oklab, {{ $upsell['tint'] }} 22%, white)">
-                        <x-menu-art :art="$upsell['art']" class="h-14 w-auto" />
+                    <div class="grid size-16 shrink-0 place-items-center rounded-2xl" style="background: color-mix(in oklab, {{ $upsellItem['tint'] }} 22%, white)">
+                        <x-menu-art :item="$upsell" class="h-14 w-auto" />
                     </div>
                     <div class="min-w-0 flex-1">
-                        <p class="text-sm font-bold">Add {{ $upsell['name'] }}?</p>
-                        <p class="text-xs text-ink-soft">Perfect with any drink · ₱{{ reset($upsell['options']['choices']) }}</p>
+                        <p class="text-sm font-bold">Add {{ $upsellItem['name'] }}?</p>
+                        <p class="text-xs text-ink-soft">Perfect with any drink · ₱{{ $menu->startingPrice($upsell) }}</p>
                     </div>
-                    <button type="button" data-add="{{ $upsell['id'] }}" class="add-btn">
+                    <button type="button" data-add="{{ $upsell }}" class="add-btn">
                         <x-site-icon name="plus" class="size-4" />
                         <span>Add</span>
                     </button>
