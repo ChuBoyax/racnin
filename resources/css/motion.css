@@ -28,7 +28,8 @@
             view-timeline: --hero block;
         }
 
-        .hero-copy {
+        .hero-copy,
+        .hero-actions {
             animation: hero-copy-out linear both;
             animation-timeline: --hero;
             animation-range: exit 0% exit 80%;
