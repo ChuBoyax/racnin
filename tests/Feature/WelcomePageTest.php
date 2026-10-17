@@ -31,6 +31,23 @@ class WelcomePageTest extends TestCase
             ->assertSee($shop['email']);
     }
 
+    public function test_the_homepage_sets_no_cookies_so_the_cdn_can_cache_it(): void
+    {
+        $response = $this->get(route('home'))->assertOk();
+
+        $this->assertSame([], $response->headers->getCookies());
+        $this->assertStringContainsString('public', $response->headers->get('Cache-Control'));
+        $this->assertStringContainsString('s-maxage=86400', $response->headers->get('Cache-Control'));
+    }
+
+    public function test_links_stay_on_https_behind_vercels_proxy(): void
+    {
+        $this->get(route('home'), ['X-Forwarded-Proto' => 'https', 'X-Forwarded-Host' => 'racnin.vercel.app'])
+            ->assertOk()
+            ->assertSee('https://racnin.vercel.app/images/logo-mark.webp', false)
+            ->assertSee('href="https://racnin.vercel.app/admin/login"', false);
+    }
+
     public function test_the_footer_takes_staff_to_the_admin_login(): void
     {
         $this->get(route('home'))

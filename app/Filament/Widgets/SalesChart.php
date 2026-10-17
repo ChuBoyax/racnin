@@ -61,6 +61,18 @@ class SalesChart extends ChartWidget
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    protected function getOptions(): array
+    {
+        return [
+            'scales' => [
+                'y' => ['beginAtZero' => true],
+            ],
+        ];
+    }
+
     protected function getType(): string
     {
         return 'line';
