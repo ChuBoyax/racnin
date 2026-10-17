@@ -1,5 +1,4 @@
-@props(['x', 'y'])
-
+{{-- One siomai, centred on $x and $y. Shared by the plate and the tisa. --}}
 <g transform="translate({{ $x }} {{ $y }})">
     <ellipse cy="4" rx="18" ry="4" fill="#1f1510" opacity=".2" filter="url(#ra-blur)" />
     <path d="M-17 2 C-19 -14 -10 -22 0 -22 C10 -22 19 -14 17 2 C10 8 -10 8 -17 2 Z" fill="url(#ra-wrapper)" />

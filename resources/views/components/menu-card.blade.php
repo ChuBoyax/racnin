@@ -1,12 +1,7 @@
-@props(['id', 'item', 'categories'])
+@props(['id', 'item', 'category'])
 
 @php
     $choices = $item['options']['choices'];
-    $hasChoices = count($choices) > 1;
-    // A real product photo (ideally a transparent cutout) replaces the render when present.
-    $photo = collect(['webp', 'png', 'jpg'])
-        ->map(fn (string $extension): string => "images/menu/{$id}.{$extension}")
-        ->first(fn (string $path): bool => is_file(public_path($path)));
     $badges = [
         'bestseller' => ['label' => 'Bestseller', 'icon' => 'star', 'class' => 'bg-ink text-cream'],
         'new' => ['label' => 'New', 'icon' => 'sparkles', 'class' => 'bg-brand text-ink'],
@@ -19,18 +14,14 @@
 <article
     data-item="{{ $id }}"
     data-category="{{ $item['category'] }}"
-    data-search="{{ Str::lower(implode(' ', [$item['name'], $item['description'], $categories[$item['category']]])) }}"
+    data-search="{{ Str::lower(implode(' ', [$item['name'], $item['description'], $category])) }}"
     data-reveal
     data-sheen
     style="--tint: {{ $item['tint'] }}; view-transition-name: item-{{ $id }}"
     class="menu-card group relative flex flex-col overflow-hidden rounded-[2rem] bg-white shadow-[0_1px_0_rgb(31_21_16/0.04),0_24px_48px_-28px_rgb(31_21_16/0.4)] ring-1 ring-ink/8 transition-[translate,box-shadow] duration-500 ease-expo hover:-translate-y-1.5 hover:shadow-[0_1px_0_rgb(31_21_16/0.04),0_40px_60px_-30px_rgb(31_21_16/0.5)]"
 >
     <div class="menu-card-stage relative aspect-square overflow-hidden">
-        @if ($photo)
-            <img src="{{ asset($photo) }}" alt="{{ $item['name'] }}" loading="lazy" data-art class="menu-photo relative z-10 mx-auto size-full py-3 transition-[rotate,scale] duration-700 ease-spring group-hover:-rotate-2 group-hover:scale-[1.05]">
-        @else
-            <x-menu-art :art="$item['art']" data-art class="relative z-10 mx-auto h-full w-auto py-3 transition-[rotate,scale] duration-700 ease-spring group-hover:-rotate-2 group-hover:scale-[1.05]" />
-        @endif
+        <x-menu-art :item="$id" data-art class="relative z-10 mx-auto h-full w-auto py-3 transition-[rotate,scale] duration-700 ease-spring group-hover:-rotate-2 group-hover:scale-[1.05]" />
 
         @if ($item['badges'])
             <div class="absolute top-4 left-4 z-20 flex flex-wrap gap-1.5">
@@ -51,7 +42,7 @@
         </div>
 
         <div class="mt-auto flex flex-col gap-4">
-            @if ($hasChoices)
+            @if (count($choices) > 1)
                 <fieldset>
                     <legend class="sr-only">{{ $item['options']['label'] }}</legend>
                     <div class="flex flex-wrap gap-1.5">
@@ -67,7 +58,7 @@
 
             <div class="flex items-center justify-between gap-3">
                 <p class="flex items-baseline gap-2">
-                    <span data-price class="font-display text-2xl font-extrabold tracking-tight">₱{{ reset($choices) }}</span>
+                    <span data-price class="font-display text-2xl font-extrabold tracking-tight">₱{{ Arr::first($choices) }}</span>
                     @isset($item['regular_price'])
                         <s class="text-sm font-semibold text-ink-soft/70">₱{{ $item['regular_price'] }}</s>
                     @endisset

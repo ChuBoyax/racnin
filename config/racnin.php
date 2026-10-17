@@ -94,8 +94,10 @@ return [
     |--------------------------------------------------------------------------
     |
     | Prices are in pesos. "tint" colors the card behind each illustration
-    | and "art" describes the illustration itself (see MenuArt component).
-    | Liquid layers are listed bottom to top with the share of the cup.
+    | and "art" describes the illustration itself (see App\View\MenuArtDrawing).
+    | Liquid layers are listed bottom to top with the share of the cup, and
+    | a combo lists the items it's made of. A photo saved as
+    | public/images/menu/{id}.webp (or .png, .jpg) replaces the illustration.
     |
     */
 
@@ -349,10 +351,7 @@ return [
             'regular_price' => 54,
             'badges' => ['sulit'],
             'tint' => '#e8506b',
-            'art' => ['type' => 'combo', 'parts' => [
-                ['type' => 'soda', 'layers' => [['#c92a4a', 0.35], ['#f27a92', 0.65]]],
-                ['type' => 'tisa'],
-            ]],
+            'art' => ['type' => 'combo', 'parts' => ['strawberry-soda', 'siomai-sa-tisa']],
         ],
 
         'combo-coffee-siomai' => [
@@ -363,10 +362,7 @@ return [
             'regular_price' => 64,
             'badges' => ['sulit'],
             'tint' => '#9a6440',
-            'art' => ['type' => 'combo', 'parts' => [
-                ['type' => 'iced', 'layers' => [['#f0dcc0', 0.5], ['#c58a4a', 0.2], ['#6b3a1e', 0.3]]],
-                ['type' => 'tisa'],
-            ]],
+            'art' => ['type' => 'combo', 'parts' => ['caramel-macchiato', 'siomai-sa-tisa']],
         ],
 
         'combo-frappe-fries' => [
@@ -377,10 +373,7 @@ return [
             'regular_price' => 84,
             'badges' => ['sulit'],
             'tint' => '#6e4127',
-            'art' => ['type' => 'combo', 'parts' => [
-                ['type' => 'frappe', 'layers' => [['#5b331f', 0.2], ['#8d5b3d', 0.8]], 'whip' => '#fff3e4', 'drizzle' => '#4a2716'],
-                ['type' => 'fries'],
-            ]],
+            'art' => ['type' => 'combo', 'parts' => ['chocolate-frappe', 'fries']],
         ],
 
     ],

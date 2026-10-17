@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\HomeController;
+use App\View\Menu;
+use App\View\MenuArtDrawing;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -29,7 +31,7 @@ class ExportStaticSite extends Command
     /**
      * Execute the console command.
      */
-    public function handle(Filesystem $files, HomeController $home): int
+    public function handle(Filesystem $files, HomeController $home, Menu $menu): int
     {
         $folder = trim(str_replace('\\', '/', (string) $this->option('output')), '/');
         $output = base_path($folder);
@@ -62,7 +64,7 @@ class ExportStaticSite extends Command
         URL::forceScheme(parse_url($root, PHP_URL_SCHEME) ?: 'https');
 
         // The admin isn't part of a static export, so only link to a login page that exists somewhere.
-        $html = $home()->with('staffLoginUrl', $this->option('login-url') ?: null)->render();
+        $html = $home($menu)->with('staffLoginUrl', $this->option('login-url') ?: null)->render();
 
         if ($siteUrl === '') {
             $html = str_replace([self::PLACEHOLDER_ROOT, str_replace('/', '\/', self::PLACEHOLDER_ROOT)], '', $html);
@@ -72,8 +74,13 @@ class ExportStaticSite extends Command
         $html = preg_replace('/\n[ \t]+/', "\n", $html);
 
         $files->deleteDirectory($output);
-        $files->ensureDirectoryExists($output);
+        $files->ensureDirectoryExists("{$output}/menu-art");
         $files->put("{$output}/index.html", $html);
+
+        // The page links each drawing as /menu-art/{item}.svg?v=…, and a static host ignores the version.
+        foreach ($menu->drawings() as $item => $art) {
+            $files->put("{$output}/menu-art/{$item}.svg", (new MenuArtDrawing($art))->toSvg());
+        }
 
         foreach (self::PUBLIC_ASSETS as $asset) {
             $source = public_path($asset);

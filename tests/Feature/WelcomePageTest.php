@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
 class WelcomePageTest extends TestCase
@@ -54,6 +55,53 @@ class WelcomePageTest extends TestCase
             ->assertOk()
             ->assertSee('href="'.route('filament.admin.auth.login').'"', false)
             ->assertSee('Staff login');
+    }
+
+    public function test_menu_pictures_are_images_instead_of_inline_drawings(): void
+    {
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('src="'.route('menu-art', ['item' => 'cafe-mocha']).'?v=', false)
+            ->assertDontSee('viewBox="0 0 200 220"', false);
+    }
+
+    public function test_a_combo_shows_the_pictures_of_the_items_it_is_made_of(): void
+    {
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSeeInOrder([
+                'data-item="combo-soda-siomai"',
+                route('menu-art', ['item' => 'strawberry-soda']).'?v=',
+                route('menu-art', ['item' => 'siomai-sa-tisa']).'?v=',
+                'data-item="combo-coffee-siomai"',
+            ], false);
+    }
+
+    public function test_a_photo_saved_for_an_item_replaces_its_drawing(): void
+    {
+        $folder = public_path('images/menu');
+        $folderExisted = File::isDirectory($folder);
+        File::ensureDirectoryExists($folder);
+        File::put("{$folder}/nachos.png", base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='));
+
+        try {
+            $this->get(route('home'))
+                ->assertOk()
+                ->assertSee('src="'.asset('images/menu/nachos.png').'"', false)
+                ->assertDontSee(route('menu-art', ['item' => 'nachos']), false);
+        } finally {
+            $folderExisted ? File::delete("{$folder}/nachos.png") : File::deleteDirectory($folder);
+        }
+    }
+
+    public function test_search_engines_get_the_menus_price_range(): void
+    {
+        config(['racnin.items.nachos.options.choices' => ['Regular' => 99]]);
+
+        $content = $this->get(route('home'))->assertOk()->getContent();
+
+        preg_match('/<script type="application\/ld\+json">(.*?)<\/script>/s', $content, $matches);
+        $this->assertSame('₱25–₱99', json_decode($matches[1] ?? '', true)['priceRange'] ?? null);
     }
 
     public function test_it_embeds_the_catalog_the_cart_prices_from(): void

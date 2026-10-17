@@ -1,20 +1,20 @@
 /**
- * Progressive enhancements around the CSS scroll-driven animations:
- * fallbacks for browsers without scroll timelines, plus small interactions.
+ * Motion that needs a little JavaScript next to the CSS scroll-driven
+ * animations: reveals as things scroll into view, the header state, and
+ * small interactions.
  */
 export function initMotion() {
-    const root = document.documentElement;
     const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const supportsScrollTimeline = CSS.supports('animation-timeline: view()');
 
-    if (!supportsScrollTimeline && !prefersReducedMotion && 'IntersectionObserver' in window) {
-        root.classList.add('reveal-fallback');
-
+    // Sections and cards below the fold fade up the first time they scroll into view. An observer
+    // does this once per element, where a scroll-linked animation would cost work on every frame.
+    // Anything already on screen when the page loads is left alone, so nothing blinks.
+    if (!prefersReducedMotion && 'IntersectionObserver' in window) {
         const observer = new IntersectionObserver(
             (entries) => {
                 for (const entry of entries) {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
+                        entry.target.classList.replace('is-pending', 'is-revealing');
                         observer.unobserve(entry.target);
                     }
                 }
@@ -22,32 +22,49 @@ export function initMotion() {
             { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
         );
 
-        document.querySelectorAll('[data-reveal]').forEach((element) => observer.observe(element));
+        for (const element of document.querySelectorAll('[data-reveal]')) {
+            if (element.getBoundingClientRect().top > innerHeight) {
+                element.classList.add('is-pending');
+                observer.observe(element);
+            }
+        }
     }
 
-    // The header animates on a scroll timeline where supported; this flag covers everyone else.
+    // The header turns into a glass pill once the top of the page scrolls away (see .site-header-inner).
+    // An observer only runs when that changes; a scroll listener would run, and force a layout, every frame.
     const header = document.querySelector('[data-site-header]');
-    const syncHeader = () => header?.toggleAttribute('data-scrolled', window.scrollY > 24);
-    syncHeader();
-    window.addEventListener('scroll', syncHeader, { passive: true });
+    const pageTop = document.querySelector('[data-page-top]');
+
+    if (header && pageTop) {
+        new IntersectionObserver(([entry]) => header.toggleAttribute('data-scrolled', !entry.isIntersecting)).observe(pageTop);
+    }
 
     // Close the mobile menu once a destination is picked.
     document.querySelectorAll('[popover] a[href^="#"]').forEach((link) => {
         link.addEventListener('click', () => link.closest('[popover]').hidePopover());
     });
 
-    // Soft light that follows the pointer across menu cards.
+    // Soft light that follows the pointer across menu cards, moved at most once per frame.
     if (matchMedia('(hover: hover)').matches) {
+        let pointer = null;
+        let frame = 0;
+
+        const moveSheen = () => {
+            frame = 0;
+            const card = pointer.target.closest?.('[data-sheen]');
+
+            if (card) {
+                const box = card.getBoundingClientRect();
+                card.style.setProperty('--mx', `${pointer.clientX - box.left}px`);
+                card.style.setProperty('--my', `${pointer.clientY - box.top}px`);
+            }
+        };
+
         document.addEventListener(
             'pointermove',
             (event) => {
-                const card = event.target.closest?.('[data-sheen]');
-
-                if (card) {
-                    const box = card.getBoundingClientRect();
-                    card.style.setProperty('--mx', `${event.clientX - box.left}px`);
-                    card.style.setProperty('--my', `${event.clientY - box.top}px`);
-                }
+                pointer = event;
+                frame ||= requestAnimationFrame(moveSheen);
             },
             { passive: true },
         );

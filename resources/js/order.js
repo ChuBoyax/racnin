@@ -74,13 +74,11 @@ export function initOrder({ cart, items, shop }) {
             return document.createElement('span');
         }
 
+        // Keep what kind of picture it is (drawing, photo or combo) and fit it to the line.
         const art = source.cloneNode(true);
+        const kind = ['menu-art-combo', 'menu-photo', 'menu-art'].find((name) => art.classList.contains(name));
         art.removeAttribute('data-art');
-        if (art.tagName === 'IMG') {
-            art.setAttribute('class', 'menu-photo size-full');
-        } else {
-            art.setAttribute('class', art.classList.contains('menu-art-combo') ? 'menu-art menu-art-combo size-full' : 'menu-art h-full w-auto');
-        }
+        art.setAttribute('class', `${kind} size-full`);
 
         return art;
     }
