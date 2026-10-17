@@ -1,0 +1,85 @@
+{
+  "_bricolage-grotesque-700-normal-DvJDmrLu.woff": {
+    "file": "assets/bricolage-grotesque-700-normal-DvJDmrLu.woff",
+    "src": "_bricolage-grotesque-700-normal-DvJDmrLu.woff"
+  },
+  "_bricolage-grotesque-700-normal-gtcctNPv.woff2": {
+    "file": "assets/bricolage-grotesque-700-normal-gtcctNPv.woff2",
+    "src": "_bricolage-grotesque-700-normal-gtcctNPv.woff2"
+  },
+  "_bricolage-grotesque-800-normal-Br4b-5gk.woff": {
+    "file": "assets/bricolage-grotesque-800-normal-Br4b-5gk.woff",
+    "src": "_bricolage-grotesque-800-normal-Br4b-5gk.woff"
+  },
+  "_bricolage-grotesque-800-normal-J50vIsBe.woff2": {
+    "file": "assets/bricolage-grotesque-800-normal-J50vIsBe.woff2",
+    "src": "_bricolage-grotesque-800-normal-J50vIsBe.woff2"
+  },
+  "_fonts-D5mDQyPj.css": {
+    "file": "assets/fonts-D5mDQyPj.css",
+    "src": "_fonts-D5mDQyPj.css"
+  },
+  "_instrument-sans-400-normal-D1W7dsQl.woff": {
+    "file": "assets/instrument-sans-400-normal-D1W7dsQl.woff",
+    "src": "_instrument-sans-400-normal-D1W7dsQl.woff"
+  },
+  "_instrument-sans-400-normal-DRC__1Mx.woff2": {
+    "file": "assets/instrument-sans-400-normal-DRC__1Mx.woff2",
+    "src": "_instrument-sans-400-normal-DRC__1Mx.woff2"
+  },
+  "_instrument-sans-500-normal-Dk9ku72i.woff2": {
+    "file": "assets/instrument-sans-500-normal-Dk9ku72i.woff2",
+    "src": "_instrument-sans-500-normal-Dk9ku72i.woff2"
+  },
+  "_instrument-sans-500-normal-Z6ESRlEs.woff": {
+    "file": "assets/instrument-sans-500-normal-Z6ESRlEs.woff",
+    "src": "_instrument-sans-500-normal-Z6ESRlEs.woff"
+  },
+  "_instrument-sans-600-normal-B7fBEWYG.woff2": {
+    "file": "assets/instrument-sans-600-normal-B7fBEWYG.woff2",
+    "src": "_instrument-sans-600-normal-B7fBEWYG.woff2"
+  },
+  "_instrument-sans-600-normal-B9e8oLYv.woff": {
+    "file": "assets/instrument-sans-600-normal-B9e8oLYv.woff",
+    "src": "_instrument-sans-600-normal-B9e8oLYv.woff"
+  },
+  "_instrument-sans-700-normal-CYfAanHo.woff2": {
+    "file": "assets/instrument-sans-700-normal-CYfAanHo.woff2",
+    "src": "_instrument-sans-700-normal-CYfAanHo.woff2"
+  },
+  "_instrument-sans-700-normal-DfAjL1vF.woff": {
+    "file": "assets/instrument-sans-700-normal-DfAjL1vF.woff",
+    "src": "_instrument-sans-700-normal-DfAjL1vF.woff"
+  },
+  "_instrument-serif-400-italic-DKMiL14s.woff2": {
+    "file": "assets/instrument-serif-400-italic-DKMiL14s.woff2",
+    "src": "_instrument-serif-400-italic-DKMiL14s.woff2"
+  },
+  "_instrument-serif-400-italic-u__WvvIK.woff": {
+    "file": "assets/instrument-serif-400-italic-u__WvvIK.woff",
+    "src": "_instrument-serif-400-italic-u__WvvIK.woff"
+  },
+  "_instrument-serif-400-normal-BVbkICAY.woff": {
+    "file": "assets/instrument-serif-400-normal-BVbkICAY.woff",
+    "src": "_instrument-serif-400-normal-BVbkICAY.woff"
+  },
+  "_instrument-serif-400-normal-DnYpCC2O.woff2": {
+    "file": "assets/instrument-serif-400-normal-DnYpCC2O.woff2",
+    "src": "_instrument-serif-400-normal-DnYpCC2O.woff2"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-Du2rY5Kt.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-Cr2liGDj.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}
